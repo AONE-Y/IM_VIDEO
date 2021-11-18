@@ -1,0 +1,30 @@
+{
+  "id": "2949120",
+  "name": "chat",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "16271320",
+      "name": "挂断",
+      "font_class": "guaduan1",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "7588288",
+      "name": "16gl-volumeMiddle",
+      "font_class": "16gl-volumeMiddle",
+      "unicode": "e9f9",
+      "unicode_decimal": 59897
+    },
+    {
+      "icon_id": "7588289",
+      "name": "16gl-volumeCross",
+      "font_class": "16gl-volumeCross",
+      "unicode": "e9fa",
+      "unicode_decimal": 59898
+    }
+  ]
+}

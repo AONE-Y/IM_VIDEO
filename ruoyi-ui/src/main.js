@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 import Cookies from 'js-cookie'
-
+import './assets/icons/iconfont/iconfont.css';
 import Element from 'element-ui'
 import './assets/styles/element-variables.scss'
 
@@ -34,6 +34,9 @@ import DictTag from '@/components/DictTag'
 import VueMeta from 'vue-meta'
 // 字典数据组件
 import DictData from '@/components/DictData'
+import VueCoreVideoPlayer from 'vue-core-video-player'
+
+
 
 // 全局方法挂载
 Vue.prototype.getDicts = getDicts
@@ -57,7 +60,7 @@ Vue.use(directive)
 Vue.use(plugins)
 Vue.use(VueMeta)
 DictData.install()
-
+Vue.use(VueCoreVideoPlayer)
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
