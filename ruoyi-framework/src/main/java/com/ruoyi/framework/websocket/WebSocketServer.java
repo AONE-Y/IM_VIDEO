@@ -1,9 +1,10 @@
 package com.ruoyi.framework.websocket;
 
 
-import cn.hutool.log.Log;
-import cn.hutool.log.LogFactory;
+
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -24,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @ServerEndpoint("/imserver/{userId}")
 @Component
 public class WebSocketServer {
-    static Log log= LogFactory.get(WebSocketServer.class);
+    static Logger log=  LoggerFactory.getLogger("websocket");;
     /**静态变量，用来记录当前在线连接数。应该把它设计成线程安全的。*/
     private static int onlineCount = 0;
     /**concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。*/

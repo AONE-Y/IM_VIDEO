@@ -9,7 +9,6 @@ import org.springframework.web.socket.server.standard.ServerEndpointExporter;
 public class WebSocketConfig {
     @Bean
     public ServerEndpointExporter serverEndpointExporter() {
-        StaticLog.warn("websocket boot.....");
         return new ServerEndpointExporter();
     }
 
