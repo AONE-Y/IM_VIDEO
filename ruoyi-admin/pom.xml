@@ -16,6 +16,12 @@
     </description>
 
     <dependencies>
+<!--        测试工具-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
 
         <!-- spring-boot-devtools -->
         <dependency>
