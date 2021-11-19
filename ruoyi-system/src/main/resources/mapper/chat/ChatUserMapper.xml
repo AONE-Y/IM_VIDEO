@@ -5,7 +5,6 @@
     <!--@mbg.generated-->
     <!--@Table IMCHAT.chat_user-->
     <id column="chat_id" jdbcType="BIGINT" property="chatId" />
-    <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="user_name" jdbcType="VARCHAR" property="userName" />
     <result column="user_sdp" jdbcType="VARCHAR" property="userSdp" />
     <result column="user_candidate" jdbcType="VARCHAR" property="userCandidate" />
@@ -13,6 +12,6 @@
   </resultMap>
   <sql id="Base_Column_List">
     <!--@mbg.generated-->
-    chat_id, user_id, user_name, user_sdp, user_candidate, connect_time
+    chat_id, user_name, user_sdp, user_candidate, connect_time
   </sql>
 </mapper>

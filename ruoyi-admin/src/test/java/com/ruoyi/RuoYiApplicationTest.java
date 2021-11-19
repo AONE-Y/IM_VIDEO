@@ -32,13 +32,13 @@ public class RuoYiApplicationTest {
     void testChatUserInsert(){
         ChatUser chatUser = new ChatUser();
         chatUser.setChatId((long)4545);
-        chatUser.setUserId((long)123);
+
         chatUser.setUserName("123");
         chatUser.setUserSdp("sdp");
         chatUser.setUserCandidate("candidate");
         chatUser.setConnectTime(LocalDateTime.now());
         chatUserService.save(chatUser);
-        chatUser.setUserId((long) 147);
+
         chatUserService.save(chatUser);
     }
     @Test

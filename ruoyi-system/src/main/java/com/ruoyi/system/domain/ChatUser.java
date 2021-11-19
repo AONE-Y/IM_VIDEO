@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 /**
  * @Project：RuoYi-Vue
  * @Package：com.ruoyi.system.domain
- * @Date：2021/11/18 16:52
+ * @Date：2021/11/19 16:50
  * @Author：ANONE
  * @Address： HaiKou·China
  * @Description:
@@ -17,17 +17,12 @@ import java.time.LocalDateTime;
  */
 @TableName(value = "IMCHAT.chat_user")
 public class ChatUser {
+    public static final String COL_USER_ID = "user_id";
     /**
      * 聊天id
      */
     @TableId(value = "chat_id", type = IdType.AUTO)
     private Long chatId;
-
-    /**
-     * 用户id
-     */
-    @TableField(value = "user_id")
-    private Long userId;
 
     /**
      * 用户账号
@@ -55,8 +50,6 @@ public class ChatUser {
 
     public static final String COL_CHAT_ID = "chat_id";
 
-    public static final String COL_USER_ID = "user_id";
-
     public static final String COL_USER_NAME = "user_name";
 
     public static final String COL_USER_SDP = "user_sdp";
@@ -81,24 +74,6 @@ public class ChatUser {
      */
     public void setChatId(Long chatId) {
         this.chatId = chatId;
-    }
-
-    /**
-     * 获取用户id
-     *
-     * @return user_id - 用户id
-     */
-    public Long getUserId() {
-        return userId;
-    }
-
-    /**
-     * 设置用户id
-     *
-     * @param userId 用户id
-     */
-    public void setUserId(Long userId) {
-        this.userId = userId;
     }
 
     /**
@@ -171,17 +146,5 @@ public class ChatUser {
      */
     public void setConnectTime(LocalDateTime connectTime) {
         this.connectTime = connectTime;
-    }
-
-    @Override
-    public String toString() {
-        return "ChatUser{" +
-                "chatId=" + chatId +
-                ", userId=" + userId +
-                ", userName='" + userName + '\'' +
-                ", userSdp='" + userSdp + '\'' +
-                ", userCandidate='" + userCandidate + '\'' +
-                ", connectTime=" + connectTime +
-                '}';
     }
 }
