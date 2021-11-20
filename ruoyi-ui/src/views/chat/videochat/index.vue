@@ -37,8 +37,6 @@
 </template>
 
 <script>
-import { addVideoChatInfo } from '@/api/chat/videochat'
-
 var ws
 var remoteView
 var localVideo

@@ -22,14 +22,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * @Description:
  * @Modified By: ANONE
  */
-@ServerEndpoint("/videochat/{room}/{userName}")
+@ServerEndpoint("/meeting/{room}/{userName}")
 @Component
-public class VideoChatServer {
+public class VideoMeetingServer {
     static Logger log = LoggerFactory.getLogger("websocket");
     /**
      * concurrent包的线程安全Set，用来存放每个客户端对应的MyWebSocket对象。
      */
-    private static ConcurrentHashMap<String, VideoChatServer> connectedUsers = new ConcurrentHashMap<>();
+    private static ConcurrentHashMap<String, ConcurrentHashMap<String,VideoMeetingServer>> connectedUsers = new ConcurrentHashMap<>();
     /**
      * 与某个客户端的连接会话，需要通过它来给客户端发送数据
      */
@@ -37,8 +37,8 @@ public class VideoChatServer {
     /**
      * 接收userName
      */
-    private String userName = "";
-    private String room = "";
+    private String userName;
+    private String room;
     private static final String TYPE_INIT = "init";
     private static final String TYPE_LOGOUT = "logout";
 
@@ -46,26 +46,30 @@ public class VideoChatServer {
      * 连接建立成功调用的方法
      */
     @OnOpen
-    public void onOpen(Session session,@PathParam("room") String room, @PathParam("userName") String userName) {
+    public void onOpen(Session session, @PathParam("room") String room,@PathParam("userName") String userName) {
         this.session = session;
         this.userName = userName;
         this.room = room;
         final ChatVideoMessageDto userInit = new ChatVideoMessageDto();
         userInit.setType(TYPE_INIT);
         userInit.setSender(userName);
+        ConcurrentHashMap<String, VideoMeetingServer> roomName = connectedUsers.get(room);
+        if (roomName == null) {
+            roomName = new ConcurrentHashMap<>();
+            roomName.put(userName,this);
+        }else {
+            roomName.values().forEach(webSocketSession -> {
+                try {
+                    webSocketSession.sendMessage(JSONObject.toJSONString(userInit));
+                } catch (Exception e) {
+                    log.warn("Error while message sending.", e);
+                }
+            });
+            roomName.put(userName,this);
 
-        connectedUsers.values().forEach(webSocketSession -> {
-            try {
-                webSocketSession.sendMessage(JSONObject.toJSONString(userInit));
-            } catch (Exception e) {
-                log.warn("Error while message sending.", e);
-            }
-        });
-        if (connectedUsers.size() < 2) {
-            connectedUsers.put(room+userName, this);
-        } else {
-            log.warn("已经有两个用户了" + userName);
         }
+        connectedUsers.put(room, roomName);
+        
 
     }
 
@@ -75,17 +79,25 @@ public class VideoChatServer {
     @OnClose
     public void onClose() {
         //从set中删除
-        connectedUsers.remove(this.room+this.userName);
+
+        ConcurrentHashMap<String, VideoMeetingServer> roomName = connectedUsers.get(this.room);
+
         final ChatVideoMessageDto userOut = new ChatVideoMessageDto();
         userOut.setType(TYPE_LOGOUT);
         userOut.setSender(userName);
-        connectedUsers.values().forEach(webSocket -> {
-            try {
-                webSocket.sendMessage(JSONObject.toJSONString(userOut));
-            } catch (Exception e) {
-                log.warn("Error while message sending.", e);
-            }
-        });
+        if (roomName != null) {
+            roomName.remove(this.userName);
+            roomName.values().forEach(webSocket -> {
+                try {
+                    webSocket.sendMessage(JSONObject.toJSONString(userOut));
+                } catch (Exception e) {
+                    log.warn("Error while message sending.", e);
+                }
+            });
+        }
+        if (roomName.isEmpty()||roomName==null) {
+            connectedUsers.remove(this.room);
+        }
 
     }
 
@@ -98,13 +110,14 @@ public class VideoChatServer {
     public void onMessage(String message, Session session) throws Exception {
         ChatVideoMessageDto userMessage = JSONObject.parseObject(message, ChatVideoMessageDto.class);
         String destinationUser = userMessage.getReceiver();
-        VideoChatServer destSocket = connectedUsers.get(this.room+destinationUser);
+        VideoMeetingServer destSocket = connectedUsers.get(this.room).get(destinationUser);
         if (destSocket != null && destSocket.session.isOpen()) {
             userMessage.setSender(userName);
             final String resendingMessage = JSONObject.toJSONString(userMessage);
             log.info("send message {} to {}", resendingMessage, destinationUser);
             destSocket.sendMessage(resendingMessage);
         }
+
     }
 
     /**
@@ -113,7 +126,10 @@ public class VideoChatServer {
      */
     @OnError
     public void onError(Session session, Throwable error) {
-        connectedUsers.remove(this.room+this.userName);
+        ConcurrentHashMap<String, VideoMeetingServer> roomName = connectedUsers.get(this.room);
+        if (roomName != null) {
+            roomName.remove(this.userName);
+        }
         log.error("用户错误:" + this.userName + ",原因:" + error.getMessage());
         error.printStackTrace();
     }
@@ -122,7 +138,7 @@ public class VideoChatServer {
      * 实现服务器主动推送
      */
     public void sendMessage(String message) throws IOException {
-        synchronized (this.session){
+        synchronized (this.session) {
             this.session.getBasicRemote().sendText(message);
         }
 
@@ -131,9 +147,9 @@ public class VideoChatServer {
     /**
      * 发送自定义消息
      */
-    public static void sendInfo(String message, @PathParam("userId") String userId) throws IOException {
+    public static void sendInfo(String message,@PathParam("room") String room, @PathParam("userId") String userId) throws IOException {
         if (StringUtils.isNotBlank(userId) && connectedUsers.containsKey(userId)) {
-            connectedUsers.get(userId).sendMessage(message);
+            connectedUsers.get(room).get(userId).sendMessage(message);
         } else {
             log.error("用户" + userId + ",不在线！");
         }
